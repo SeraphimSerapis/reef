@@ -1,0 +1,56 @@
+# Ask Reef from Home Assistant.
+#
+# configuration.yaml: a generic REST command that forwards {state, questions} to Reef.
+rest_command:
+  reef_decide:
+    url: "http://reef.lan:8080/v1/systemone"
+    method: POST
+    content_type: "application/json"
+    payload: '{{ {"state": state, "questions": questions} | to_json }}'
+    timeout: 5
+
+# automations.yaml: triage Frigate events before they reach your phone.
+automation:
+  - alias: "Frigate: notify only when Reef says so"
+    mode: queued
+    trigger:
+      - platform: mqtt
+        topic: frigate/events
+    condition:
+      - "{{ trigger.payload_json.type == 'new' }}"
+    action:
+      - service: rest_command.reef_decide
+        data:
+          state:
+            source: frigate
+            event:
+              camera: "{{ trigger.payload_json.after.camera }}"
+              label: "{{ trigger.payload_json.after.label }}"
+              top_score: "{{ trigger.payload_json.after.top_score }}"
+              entered_zones: "{{ trigger.payload_json.after.entered_zones }}"
+              sub_label: "{{ trigger.payload_json.after.sub_label }}"
+              stationary: "{{ trigger.payload_json.after.stationary }}"
+              start: "{{ now().strftime('%a %H:%M') }}"
+            household:
+              anyone_home: "{{ is_state('group.family', 'home') }}"
+              alarm: "{{ states('alarm_control_panel.home') }}"
+              night_mode: "{{ is_state('input_boolean.night_mode', 'on') }}"
+          questions:
+            notify:
+              type: noul
+              instructions: "Should the household get a phone notification for this event?"
+            threat:
+              type: score
+              instructions: "How concerning is this event from a security point of view?"
+              criteria: ["nothing to see", "unremarkable", "worth a look later", "suspicious", "possible intrusion or theft"]
+        response_variable: reef
+      - if: "{{ reef.status == 200 and reef.content.answers.notify.noul > 0.6 }}"
+        then:
+          - service: notify.mobile_app_phone
+            data:
+              title: "{{ trigger.payload_json.after.label | title }} on {{ trigger.payload_json.after.camera }}"
+              message: >-
+                Threat {{ reef.content.answers.threat.score | round(1) }}/4
+                (confidence {{ (reef.content.answers.notify.confidence * 100) | round }}%)
+              data:
+                image: "/api/frigate/notifications/{{ trigger.payload_json.after.id }}/thumbnail.jpg"

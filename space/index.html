@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Reef: a small general typed-decision model (yes/no, choice, score) running entirely in your browser." />
+    <title>Reef · typed decisions in your browser</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🪸%3C/text%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="modulepreload" href="vendor/litert-core.js" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to the demo</a>
+    <header class="wrap">
+      <h1>Reef <span aria-hidden="true">🪸</span></h1>
+      <p class="lede">
+        A small general-purpose encoder (about 11M parameters in total, int8, Edge&nbsp;TPU compatible) that answers
+        <strong>typed questions</strong> about a state, either JSON or plain text: yes/no, pick one option, or a score. It scores
+        <strong>4.73</strong> on Decision Index&nbsp;0.2.1 (self-measured with the public harness, not an official board entry;
+        GLiNER&nbsp;2.5 small, 73.9M params: 3.82). The public datasets it learned from carry human labels. The
+        homelab and answer-audit data carry soft labels from <strong>Gemma&nbsp;4</strong>.
+      </p>
+      <p class="note">
+        This demo of <a href="https://github.com/SeraphimSerapis/reef">github.com/SeraphimSerapis/reef</a> runs the model
+        <strong>entirely in your browser</strong> (LiteRT.js on WebAssembly). Your inputs never leave this page.
+      </p>
+      <p class="note">
+        Browser int8 kernels round a few values differently from the native runtime: about 95% of labels are identical
+        and probabilities agree within a few percent.
+      </p>
+    </header>
+
+    <main id="main" class="wrap">
+      <p id="status" class="status" role="status" aria-live="polite">Loading…</p>
+
+      <form id="form" class="grid" novalidate>
+        <div class="field full">
+          <label for="example">Example <span class="hint">(homelab decisions: alert triage, camera events, notification gating, …)</span></label>
+          <select id="example"></select>
+          <p id="example-desc" class="hint"></p>
+        </div>
+        <div class="field">
+          <label for="state">State <span class="hint">(JSON or plain text)</span></label>
+          <textarea id="state" spellcheck="false" autocomplete="off" rows="18"></textarea>
+        </div>
+        <div class="field">
+          <label for="questions">Questions <span class="hint">(SystemOne JSON: noul, choice, score)</span></label>
+          <textarea id="questions" spellcheck="false" autocomplete="off" rows="18"></textarea>
+        </div>
+        <div class="actions full">
+          <button id="run" type="submit" disabled>Run</button>
+          <span class="hint">or <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd></span>
+        </div>
+      </form>
+
+      <section aria-labelledby="results-title" class="results-wrap">
+        <h2 id="results-title" class="visually-hidden">Results</h2>
+        <p id="usage" class="usage" aria-live="polite"></p>
+        <div id="results" class="results"></div>
+        <details id="raw-wrap" hidden>
+          <summary>Raw response</summary>
+          <pre id="raw"></pre>
+        </details>
+      </section>
+
+      <details class="settings">
+        <summary>Model settings</summary>
+        <form id="settings">
+          <label for="model-url">Model base URL</label>
+          <input id="model-url" type="url" inputmode="url" spellcheck="false" />
+          <p class="hint">
+            A folder with <code>config.json</code>, <code>tokenizer.json</code>, <code>embeddings.npz</code> and
+            <code>reef_int8.tflite</code>, as exported by <code>reef export</code>. Also settable with <code>?model=…</code>.
+          </p>
+          <button type="submit">Load model</button>
+        </form>
+      </details>
+    </main>
+
+    <footer class="wrap">
+      <p>
+        Apache-2.0 · Model: <a href="https://huggingface.co/seraphimserapis/reef">seraphimserapis/reef</a> ·
+        Code: <a href="https://github.com/SeraphimSerapis/reef">SeraphimSerapis/reef</a> · Runtime:
+        <a href="https://ai.google.dev/edge/litert/web">LiteRT.js</a>
+      </p>
+    </footer>
+  </body>
+</html>

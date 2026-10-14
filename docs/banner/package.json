@@ -1,0 +1,8 @@
+{
+  "name": "reef-banner",
+  "private": true,
+  "type": "module",
+  "description": "Renders docs/banner.svg and docs/banner.dark.svg with ascii.rest (MIT).",
+  "scripts": { "build": "node banner.ts" },
+  "devDependencies": { "ascii.rest": "0.4.0" }
+}

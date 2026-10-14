@@ -1,0 +1,6 @@
+# Local model copy for testing (populated by tools/prepare.py); the Space loads from the Hub.
+model/
+# Dev tooling
+tools/node_modules/
+tools/.cache/
+__pycache__/

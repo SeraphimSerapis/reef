@@ -1,0 +1,15 @@
+{
+  "name": "reef-space-tools",
+  "private": true,
+  "description": "Dev tools for the Reef browser demo: vendoring LiteRT.js and the JS/Python parity test.",
+  "type": "module",
+  "scripts": {
+    "vendor": "node vendor_litert.mjs",
+    "parity": "node parity_test.mjs"
+  },
+  "dependencies": {
+    "@litertjs/core": "2.5.3",
+    "@litertjs/wasm-utils": "2.5.3",
+    "playwright": "^1.64.0"
+  }
+}

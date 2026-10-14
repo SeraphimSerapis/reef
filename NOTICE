@@ -1,0 +1,53 @@
+Reef
+Copyright 2026 Reef contributors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Third-party components used or redistributed by Reef:
+
+* potion-base-8M static embeddings and WordPiece tokenizer (minishlab), MIT License.
+  https://huggingface.co/minishlab/potion-base-8M
+  Exported Reef artifacts contain a projection of this embedding table (embeddings.npz)
+  and its tokenizer (tokenizer.json).
+  Copyright (c) 2024 Thomas van Dongen and Stéphan Tulkens (Model2Vec / MinishLab).
+
+* LocalLLaMA/typed-decisions dataset, Apache License 2.0. Used for training and evaluation;
+  not redistributed in this repository.
+  https://huggingface.co/datasets/LocalLLaMA/typed-decisions
+
+* Gemma 4 (google/gemma-4-E4B-it, google/gemma-4-26B-A4B-it), Apache License 2.0. The teacher
+  models: the homelab and answer-audit packs' training labels are Gemma 4's answer distributions,
+  distilled into Reef. Gemma is a trademark of Google LLC.
+  https://huggingface.co/google/gemma-4-E4B-it
+
+* Public decision datasets (train splits only; used to train the released weights, not
+  redistributed in this repository): MASSIVE, SNIPS, BANKING77, CLINC150, MINDS-14, WANLI,
+  MultiNLI (OANC genres), ContractNLI, Glaive function calling v2, ToolACE, When2Call, API-Bank,
+  Amazon ESCI, GoEmotions, Civil Comments, SMS Spam Collection, SEntFiN, Twitter financial news,
+  iSarcasmEval, HellaSwag, WinoGrande, GSM8K, Open-Jev (ZefanCai/Open-Jev). Licences: CC BY 4.0,
+  CC BY 3.0, CC0 1.0, Apache-2.0, MIT. The model card of seraphimserapis/reef lists them.
+
+* libedgetpu community builds (feranick/libedgetpu), Apache License 2.0. Downloaded at setup
+  time by `reef setup-edgetpu`; not redistributed.
+  https://github.com/feranick/libedgetpu
+
+* Edge TPU Compiler (google-coral/edgetpu), Apache License 2.0. Fetched inside the Docker image
+  defined in docker/compiler.Dockerfile; not redistributed.
+  https://github.com/google-coral/edgetpu
+
+* ascii.rest (bas3line), MIT License. Renders the README banner (docs/banner.svg,
+  docs/banner.dark.svg) from docs/banner/banner.ts; a dev-only dependency.
+  https://ascii.rest  ·  https://github.com/bas3line/ascii
+  Copyright (c) 2026 bas3line.
+
+* Decision Index harness (apolinario/decision-index), MIT License. scripts/build_general.py
+  copies its benchmark request wording, criteria and option-key rules and adapts its
+  home-appliance scenario generator and GSM8K distractor method.
+  https://github.com/apolinario/decision-index
+  Copyright (c) 2026 Apolinário Passos.
+
+* tool-eval-bench (SeraphimSerapis/tool-eval-bench), MIT License. scripts/build_audit.py
+  copies the wording of its 17 answer-audit questions (instructions, criteria and option keys)
+  and grounds generated transcripts in its scenario prompts. Its tests and fixtures are only
+  used as held-out evaluation data.
+  https://github.com/SeraphimSerapis/tool-eval-bench

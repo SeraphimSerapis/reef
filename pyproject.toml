@@ -1,0 +1,70 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "reef-decide"
+version = "0.1.0"
+description = "Reef: tiny typed-decision models that run on a Google Coral Edge TPU."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.10,<3.13"
+authors = [{ name = "Reef contributors" }]
+keywords = ["edge-tpu", "coral", "tflite", "decision-model", "systemone", "jev", "classification"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+# The runtime is deliberately small: a tokenizer, numpy, a TFLite interpreter, and the Hub client
+# so `reef serve org/model` can fetch a model.
+dependencies = [
+  "numpy>=1.26",
+  "tokenizers>=0.19",
+  "ai-edge-litert>=1.2",
+  "huggingface_hub>=0.24",
+]
+
+[project.optional-dependencies]
+# Everything needed to train, quantize and evaluate a model.
+train = [
+  "tensorflow>=2.18,<2.21",
+  "pandas>=2.1",
+  "pyarrow>=15",
+  "safetensors>=0.4",
+]
+
+[project.scripts]
+reef = "reef.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/SeraphimSerapis/reef"
+Issues = "https://github.com/SeraphimSerapis/reef/issues"
+Dataset = "https://huggingface.co/datasets/LocalLLaMA/typed-decisions"
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/reef"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["B905"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/reef/packs/*.py" = ["E501"]  # generators are mostly data tables of realistic strings
+"src/reef/hub.py" = ["E501"]  # model-card template
+"scripts/*.py" = ["E501", "E731", "E741"]  # dataset builders: verbatim benchmark wording, small field lambdas
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

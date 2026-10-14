@@ -1,0 +1,26 @@
+# Reef next to your homelab stack. Point Home Assistant, Node-RED, n8n or Alertmanager webhooks
+# at http://reef:8080/v1/systemone.
+services:
+  reef:
+    image: ghcr.io/seraphimserapis/reef:latest
+    # build: { context: .., dockerfile: docker/Dockerfile }
+    container_name: reef
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # A Hugging Face repo id (downloaded once, cached in the volume) or a mounted path like /model.
+      REEF_MODEL: seraphimserapis/reef
+    volumes:
+      - reef-data:/data
+      # - ./my-model:/model:ro       # your own model; set REEF_MODEL=/model
+    devices:
+      # USB Coral (the device re-enumerates after firmware load, so pass the whole bus):
+      - /dev/bus/usb:/dev/bus/usb
+      # M.2 / PCIe Coral instead (needs the gasket/apex driver on the host):
+      # - /dev/apex_0:/dev/apex_0
+    # Note: an Edge TPU can only be opened by one process. If Frigate uses your Coral,
+    # give Reef a second one (or the second TPU of a dual-TPU M.2 card).
+
+volumes:
+  reef-data:
